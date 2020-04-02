@@ -39,7 +39,7 @@ class Sudoku(object):
             return mypuzzle
         row = nextVarTuple[0]
         col = nextVarTuple[1]
-        print("r: " + str(row) + ", c: " + str(col))
+        #print("r: " + str(row) + ", c: " + str(col))
 
         legalValues = mylegalSet[row][col]
 
@@ -93,7 +93,7 @@ def hasLegalAss(legalSet):
         for c in range(9):
             cellLegalAssValues = legalSet[r][c]
             if len(cellLegalAssValues) <= 0:
-                print("no legal at r: " + str(r) + ", c: " + str(c))
+                #print("no legal at r: " + str(r) + ", c: " + str(c))
                 return False
     return True
 

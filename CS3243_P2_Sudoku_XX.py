@@ -12,6 +12,7 @@ class Sudoku(object):
 
         # user added
         self.legalSet = copy.deepcopy(initCalcLegalSet(puzzle))
+        self.maxDepth = 0
 
     def solve(self):
         # TODO: Write your code here
@@ -23,17 +24,24 @@ class Sudoku(object):
         #printGrid(legalSet)
         #print(hasLegalAss(legalSet))
         
-        self.ans = self.backtrack(self.ans, self.legalSet)
+        self.ans = self.backtrack(self.ans, self.legalSet, 0)
+        #print(getMRV(self.ans, self.legalSet))
         
         # self.ans is a list of lists
         return self.ans
 
-    def backtrack(self, puzzle, legalSet):
+    def backtrack(self, puzzle, legalSet, depth):
+
+        # remove this
+        if self.maxDepth < depth:
+            self.maxDepth = depth
+
         # def copy
         mypuzzle = copy.deepcopy(puzzle)
         mylegalSet = copy.deepcopy(legalSet)
         
-        nextVarTuple = getNextVar(mypuzzle) 
+        nextVarTuple = getMRV(mypuzzle, mylegalSet) 
+        #nextVarTuple = getNextVar(mypuzzle) 
         if (nextVarTuple[2] == -1):
             # success
             return mypuzzle
@@ -44,16 +52,18 @@ class Sudoku(object):
         legalValues = mylegalSet[row][col]
 
         for v in legalValues:
-            print("r: " + str(row) + ", c: " + str(col) + ", value: " + str(v))
+            print("maxDepth: " + str(self.maxDepth) + ", depth: " + str(depth) + ", r: " + str(row) + ", c: " + str(col) + ", value: " + str(v))
             if True:
                 iterpuzzle = copy.deepcopy(mypuzzle)
                 iterlegalSet = copy.deepcopy(mylegalSet)
                 iterpuzzle[row][col] = v
                 iterlegalSet = recalcLegalSet(iterpuzzle, iterlegalSet)
 
+                #printLegalSet(iterlegalSet)
+
                 canContinue = hasLegalAss(iterlegalSet)
                 if canContinue:
-                    nextStage = self.backtrack(iterpuzzle, iterlegalSet)
+                    nextStage = self.backtrack(iterpuzzle, iterlegalSet, depth + 1)
                     if nextStage:
                         return nextStage
             #else:
@@ -66,6 +76,31 @@ class Sudoku(object):
     # Note that our evaluation scripts only call the solve method.
     # Any other methods that you write should be used within the solve() method.
 
+def getMRV(puzzle, legalSet):
+    row = -1
+    col = -1
+    minLen = -1
+    isFirst = True
+    for r in range(9):
+        for c in range(9):
+            cellVal = puzzle[r][c]
+            if cellVal != 0:
+                continue
+            lenLegal = len(legalSet[r][c])
+            if isFirst:
+                isFirst = False
+                minLen = lenLegal
+                row = r
+                col = c
+            else:
+                if lenLegal < minLen:
+                    minLen = lenLegal
+                    row = r
+                    col = c
+    return [row, col, minLen]
+                
+    
+    
 
 def getTestGrid():
     testGrid = [[-1 for i in range(9)] for j in range(9)]
@@ -93,7 +128,7 @@ def hasLegalAss(legalSet):
         for c in range(9):
             cellLegalAssValues = legalSet[r][c]
             if len(cellLegalAssValues) <= 0:
-                #print("no legal at r: " + str(r) + ", c: " + str(c))
+                print("no legal at r: " + str(r) + ", c: " + str(c))
                 return False
     return True
 
@@ -108,12 +143,15 @@ def initCalcLegalSet(puzzle):
 # given existing legalSet, ensure any newer non legal values are removed
 def recalcLegalSet(puzzle, inputLegalSet):
     outputLegalSet = copy.deepcopy(inputLegalSet)
+    lenLegal = -1
     for r in range(9):
         for c in range(9):
             existingCellLegalValues = outputLegalSet[r][c]
             newCellLegalValues = findLegalValues(puzzle, r, c)
             reducedCellLegalValues = list(filter(lambda x: x in newCellLegalValues, existingCellLegalValues))
             outputLegalSet[r][c] = reducedCellLegalValues
+            lenLegal = lenLegal + len(outputLegalSet[r][c])
+    #print("len Legal: " + str(lenLegal))
     return outputLegalSet
 
 

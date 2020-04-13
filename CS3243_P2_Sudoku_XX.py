@@ -52,7 +52,7 @@ class Sudoku(object):
         legalValues = mylegalSet[row][col]
 
         for v in legalValues:
-            print("maxDepth: " + str(self.maxDepth) + ", depth: " + str(depth) + ", r: " + str(row) + ", c: " + str(col) + ", value: " + str(v))
+            #print("maxDepth: " + str(self.maxDepth) + ", depth: " + str(depth) + ", r: " + str(row) + ", c: " + str(col) + ", value: " + str(v))
             if True:
                 iterpuzzle = copy.deepcopy(mypuzzle)
                 iterlegalSet = copy.deepcopy(mylegalSet)
@@ -128,7 +128,7 @@ def hasLegalAss(legalSet):
         for c in range(9):
             cellLegalAssValues = legalSet[r][c]
             if len(cellLegalAssValues) <= 0:
-                print("no legal at r: " + str(r) + ", c: " + str(c))
+                #print("no legal at r: " + str(r) + ", c: " + str(c))
                 return False
     return True
 

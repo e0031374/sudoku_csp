@@ -50,8 +50,9 @@ class Sudoku(object):
         #print("r: " + str(row) + ", c: " + str(col))
 
         legalValues = mylegalSet[row][col]
+        sortedLegalValuesByLCV = sortByLCV(mypuzzle, mylegalSet, legalValues, row, col)
 
-        for v in legalValues:
+        for v in sortedLegalValuesByLCV: #legalValues:
             #print("maxDepth: " + str(self.maxDepth) + ", depth: " + str(depth) + ", r: " + str(row) + ", c: " + str(col) + ", value: " + str(v))
             if True:
                 iterpuzzle = copy.deepcopy(mypuzzle)
@@ -98,8 +99,49 @@ def getMRV(puzzle, legalSet):
                     row = r
                     col = c
     return [row, col, minLen]
+
+# newly added
+def sortByLCV(grid, legalSet, values, row, col):
+    valuesCopy = copy.copy(values)
+    newValues = []
+    while len(valuesCopy) > 0:
+        val = getLCV(grid, legalSet, valuesCopy, row, col)
+        valuesCopy.remove(val)
+        newValues.append(val)
+    if len(newValues) != len(values):
+        print "ERROR in sortByLCV"
+    return newValues
                 
     
+def getLCV(grid, legalSet, values, row, col):
+    out = -1
+    minCount = 999
+    
+    for value in values:
+        count = 0 
+        for r in range(9):
+            legalForThatVal = legalSet[r][col]
+            if value in legalForThatVal:
+                count = count + 1
+
+        for c in range(9):
+            legalForThatVal = legalSet[c][row]
+            if value in legalForThatVal:
+                count = count + 1
+            
+        subGridRow = row // 3
+        subGridCol = col // 3
+        for gr in range(3):
+            for gc in range(3):
+                legalForThatVal = legalSet[gr][gc]
+                count = count + 1
+
+        if count < minCount:
+            out = value
+
+    return out
+    
+
     
 
 def getTestGrid():
